@@ -9,4 +9,5 @@ export default {
     DB_PASSWORD: <string>process.env.DB_PASSWORD,
     DB_PORT: process.env.DB_PORT as unknown as number,
   },
+  SECRET_KEY_JWT: <string>process.env.JWT_SECRET_KEY,
 };

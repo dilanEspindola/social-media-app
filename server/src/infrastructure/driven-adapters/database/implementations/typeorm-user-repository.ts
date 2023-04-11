@@ -27,12 +27,14 @@ export class TypeOrmUserRepository implements UserRepository {
     return users;
   }
 
-  getUserByUsername(_username: string): Promise<User | null> {
-    throw new Error("Method not implemented.");
+  async getUserByUsername(username: string): Promise<User | null> {
+    const user = await this.userRepository.findOneBy({ username });
+    return user;
   }
 
-  getUserById(_id: number): Promise<User | null> {
-    throw new Error("Method not implemented.");
+  async getUserById(id: string): Promise<User | null> {
+    const user = await this.userRepository.findOneBy({ id });
+    return user;
   }
 
   async createUser(user: CreateUserDto): Promise<User> {
@@ -40,7 +42,7 @@ export class TypeOrmUserRepository implements UserRepository {
     return await this.userRepository.save(newUser);
   }
 
-  deleteUserById(_id: number): Promise<void> {
+  deleteUserById(_id: string): Promise<void> {
     throw new Error("Method not implemented.");
   }
 }

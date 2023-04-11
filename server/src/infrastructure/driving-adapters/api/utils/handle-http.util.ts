@@ -5,5 +5,5 @@ export const handleHttp = (
   message: string,
   res: Response
 ) => {
-  res.status(statusCode).json({ message });
+  res.status(statusCode).json({ message, statusCode });
 };

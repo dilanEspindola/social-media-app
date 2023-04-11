@@ -31,6 +31,7 @@ export class AuthController implements ForAuthenticateController {
       const { token } = generateToken({
         id: userCreated.id,
         email: userCreated.email,
+        usrname: userCreated.username,
       });
 
       return res
