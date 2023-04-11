@@ -14,7 +14,15 @@ export class TypeOrmUserRepository implements UserRepository {
   }
 
   async getAllUsers(): Promise<User[]> {
-    const users = await this.userRepository.find();
+    const users = await this.userRepository.find({
+      select: {
+        email: true,
+        fullname: true,
+        id: true,
+        username: true,
+        photo: true,
+      },
+    });
 
     return users;
   }

@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
+import { CreateUserDto } from "../../../../domain/dtos/user.dto";
 import {
   GetAllUsersUseCase,
   CreateUserUseCase,
 } from "../../../../app/use-cases/user-cases";
 import { ForUserController } from "../../../ports/driving";
-import { CreateUserDto } from "../../../../domain/dtos/user.dto";
-import { handleHttp } from "../utils";
+import { EncryptAndValidatePassword, handleHttp } from "../utils";
+import { logger } from "../../logger";
 
 export class UserCotroller implements ForUserController {
   constructor(
@@ -26,12 +27,19 @@ export class UserCotroller implements ForUserController {
 
   async createUser(req: Request, res: Response): Promise<any> {
     try {
+      const hashPassword = new EncryptAndValidatePassword();
       const userData = req.body as CreateUserDto;
-      const newUser = await this.createUserUseCase.run(userData);
 
-      return res.status(201).json({ userCreated: newUser });
+      const passwordHashed = await hashPassword.hashPassword(userData.password);
+
+      const { password, ...rest } = await this.createUserUseCase.run({
+        ...userData,
+        password: passwordHashed,
+      });
+
+      return res.status(201).json({ user: rest });
     } catch (error: any) {
-      console.log(error.message);
+      logger.error(error.message);
       return handleHttp(500, "INTERNAL_SERVER_ERROR", res);
     }
   }
