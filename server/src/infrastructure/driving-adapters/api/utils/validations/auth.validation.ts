@@ -16,7 +16,7 @@ export const registerUserValidation = z.object({
       .string({
         required_error: "email is required",
       })
-      .email({ message: "it is not a valid email" }),
+      .email({ message: "it must be a valid email" }),
     password: z
       .string({
         required_error: "password is required",
@@ -25,6 +25,21 @@ export const registerUserValidation = z.object({
   }),
 });
 
+export const loginUserValidation = z.object({
+  body: z.object({
+    email: z
+      .string({ required_error: "email is required" })
+      .email("it must be a valid email"),
+    password: z
+      .string({ required_error: "password is required" })
+      .min(6, { message: "password must be at least 6 characters" }),
+  }),
+});
+
 export type RegisterUserValidationType = z.infer<
   typeof registerUserValidation
+>["body"];
+
+export type LoginUserValidationTyoe = z.infer<
+  typeof loginUserValidation
 >["body"];

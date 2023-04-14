@@ -51,4 +51,12 @@ export class UserCotroller implements ForUserController {
       return handleHttp(errorMessage.statusCode, errorMessage.message, res);
     }
   }
+
+  async updateUser(_req: Request, _res: Response): Promise<any> {
+    throw new Error();
+  }
+
+  async deleteUser(_req: Request, _res: Response): Promise<any> {
+    throw new Error();
+  }
 }

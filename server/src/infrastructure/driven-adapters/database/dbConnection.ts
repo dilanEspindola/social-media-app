@@ -2,6 +2,7 @@ import { DataSource, DataSourceOptions } from "typeorm";
 import { config } from "../../../config";
 import { logger } from "../../driving-adapters/logger";
 import { User } from "./models";
+import { ForMysqlConnection } from "../../ports/driven";
 
 const dbOptions: DataSourceOptions = {
   type: "mysql",
@@ -14,7 +15,7 @@ const dbOptions: DataSourceOptions = {
   synchronize: true,
 };
 
-export class MysqlConnection {
+export class MysqlConnection implements ForMysqlConnection {
   private static dbInstance: MysqlConnection;
   private dataSource: DataSource;
 

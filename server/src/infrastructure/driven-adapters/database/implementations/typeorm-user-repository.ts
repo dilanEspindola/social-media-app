@@ -27,6 +27,11 @@ export class TypeOrmUserRepository implements UserRepository {
     return users;
   }
 
+  async getUserByEmail(email: string): Promise<User | null> {
+    const user = await this.userRepository.findOneBy({ email });
+    return user;
+  }
+
   async getUserByUsername(username: string): Promise<User | null> {
     const user = await this.userRepository.findOneBy({ username });
     return user;

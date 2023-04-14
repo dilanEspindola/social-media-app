@@ -5,19 +5,30 @@ import {
   generateToken,
   handleHttp,
   trimData,
+  validationError,
 } from "../utils";
-import { CreateUserUseCase } from "../../../../app/use-cases/user-cases";
+import {
+  CreateUserUseCase,
+  GetUserUseCase,
+} from "../../../../app/use-cases/user-cases";
 import { logger } from "../../logger";
-import { RegisterUserValidationType } from "../utils/validations";
+import {
+  LoginUserValidationTyoe,
+  RegisterUserValidationType,
+} from "../utils/validations";
+import { UserNotFoundException } from "../../../../domain/exceptions";
 
 export class AuthController implements ForAuthenticateController {
-  constructor(private readonly createUserUseCase: CreateUserUseCase) {}
+  constructor(
+    private readonly createUserUseCase: CreateUserUseCase,
+    private readonly getUserUseCase: GetUserUseCase
+  ) {}
 
   async register(
     req: Request<unknown, unknown, RegisterUserValidationType>,
     res: Response
   ) {
-    const userData = trimData(req.body) as RegisterUserValidationType;
+    const userData = trimData<RegisterUserValidationType>(req.body);
     try {
       const hashPassword = new EncryptAndValidatePassword();
 
@@ -31,7 +42,6 @@ export class AuthController implements ForAuthenticateController {
       const { token } = generateToken({
         id: userCreated.id,
         email: userCreated.email,
-        usrname: userCreated.username,
       });
 
       return res
@@ -39,12 +49,33 @@ export class AuthController implements ForAuthenticateController {
         .json({ user: { ...userCreated, password: "" }, token });
     } catch (error: any) {
       logger.error(error.message);
-      return handleHttp(500, "INTERNAL_SERVER_ERROR", res);
+      const { message, statusCode } = validationError(error.message);
+      return handleHttp(statusCode, message, res);
     }
   }
 
-  async login(req: Request, res: Response) {
-    console.log(req.body);
-    return res.json({ msg: "login" });
+  async login(
+    req: Request<unknown, unknown, LoginUserValidationTyoe>,
+    res: Response
+  ) {
+    try {
+      const hashPassword = new EncryptAndValidatePassword();
+      const user = await this.getUserUseCase.getUserByEmail(req.body.email);
+
+      const isValidatePassword = await hashPassword.validatePassword(
+        req.body.password,
+        user.password
+      );
+
+      if (!isValidatePassword) throw new UserNotFoundException();
+
+      const { token } = generateToken({ id: user.id, email: user.email });
+
+      return res.status(200).json({ user: { ...user, password: "" }, token });
+    } catch (error: any) {
+      logger.error(error.message);
+      const { message, statusCode } = validationError(error.message);
+      return handleHttp(statusCode, message, res);
+    }
   }
 }

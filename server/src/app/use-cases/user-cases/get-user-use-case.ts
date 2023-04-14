@@ -3,10 +3,18 @@ import { UserNotFoundException } from "../../../domain/exceptions";
 import { UserRepository } from "../../../domain/repositories/user-repository";
 
 export class GetUserUseCase {
-  private readonly _userRepository: UserRepository;
+  protected readonly _userRepository: UserRepository;
 
   constructor(userRepository: UserRepository) {
     this._userRepository = userRepository;
+  }
+
+  async getUserByEmail(email: string): Promise<User> {
+    const user = await this._userRepository.getUserByEmail(email);
+
+    if (!user) throw new UserNotFoundException();
+
+    return user;
   }
 
   async getUserByUsername(username: string): Promise<User> {

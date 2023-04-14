@@ -21,7 +21,6 @@ export const verifyTokenMiddleware = (
   } catch (error: any) {
     logger.error(error.message);
     const { message, statusCode } = validationError(error.message);
-    logger.error(message);
     return handleHttp(statusCode, message, res);
   }
 };
