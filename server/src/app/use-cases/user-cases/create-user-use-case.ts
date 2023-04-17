@@ -1,5 +1,8 @@
 import { UserRepository } from "../../../domain/repositories/user-repository";
-import { CreateUserDto } from "../../../domain/dtos/user.dto";
+import {
+  CreateUserDto,
+  CreateUserEmailDto,
+} from "../../../domain/dtos/user.dto";
 import { UserExistException } from "../../../domain/exceptions";
 
 export class CreateUserUseCase {
@@ -14,6 +17,18 @@ export class CreateUserUseCase {
     );
 
     if (userExist) throw new UserExistException();
+
+    const newUser = await this._userRepository.createUser(user);
+
+    return newUser;
+  }
+
+  async signinEmail(user: CreateUserEmailDto) {
+    const userExist = await this._userRepository.getUserByEmail(user.email);
+
+    if (userExist) {
+      return userExist;
+    }
 
     const newUser = await this._userRepository.createUser(user);
 

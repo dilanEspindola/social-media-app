@@ -17,6 +17,7 @@ import {
   RegisterUserValidationType,
 } from "../utils/validations";
 import { UserNotFoundException } from "../../../../domain/exceptions";
+import { User } from "../../../../domain/entities/user";
 
 export class AuthController implements ForAuthenticateController {
   constructor(
@@ -72,6 +73,22 @@ export class AuthController implements ForAuthenticateController {
       const { token } = generateToken({ id: user.id, email: user.email });
 
       return res.status(200).json({ user: { ...user, password: "" }, token });
+    } catch (error: any) {
+      logger.error(error.message);
+      const { message, statusCode } = validationError(error.message);
+      return handleHttp(statusCode, message, res);
+    }
+  }
+
+  async loginGoogle(_req: Request, res: Response): Promise<any> {
+    return res.json({ msg: "ok" });
+  }
+
+  async loginGoogleCallback(req: Request, res: Response): Promise<any> {
+    try {
+      const user = req.user as User;
+      const { token } = generateToken({ id: user.id, email: user.email });
+      return res.json({ user, token });
     } catch (error: any) {
       logger.error(error.message);
       const { message, statusCode } = validationError(error.message);

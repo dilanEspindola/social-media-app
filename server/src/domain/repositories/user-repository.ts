@@ -1,4 +1,4 @@
-import { CreateUserDto } from "../dtos/user.dto";
+import { CreateUserDto, CreateUserEmailDto } from "../dtos/user.dto";
 import { User } from "../entities/user";
 
 export interface UserRepository {
@@ -6,6 +6,6 @@ export interface UserRepository {
   getUserByEmail(email: string): Promise<User | null>;
   getUserByUsername(username: string): Promise<User | null>;
   getUserById(id: string): Promise<User | null>;
-  createUser(user: CreateUserDto): Promise<User>;
+  createUser(user: CreateUserDto | CreateUserEmailDto): Promise<User>;
   deleteUserById(id: string): Promise<void>;
 }

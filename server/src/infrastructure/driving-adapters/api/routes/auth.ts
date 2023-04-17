@@ -1,4 +1,5 @@
 import { Router } from "express";
+import passport from "passport";
 import { AuthController } from "../controllers";
 import { validationMiddleware } from "../middlewares";
 import {
@@ -26,6 +27,18 @@ router.post(
   "/login",
   validationMiddleware(loginUserValidation),
   authController.login.bind(authController)
+);
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] }),
+  authController.loginGoogle.bind(authController)
+);
+router.get(
+  "/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: "http://localhost:4000/api/auth/login",
+  }),
+  authController.loginGoogleCallback.bind(authController)
 );
 
 export { router };
